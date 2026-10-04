@@ -1,0 +1,111 @@
+{
+  "entities": {
+    "Event": {
+      "title": "Event",
+      "description": "A pickleball open-play session or tournament event.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique event identifier." },
+        "name": { "type": "string", "description": "Event title or club name.", "maxLength": 100 },
+        "date": { "type": "string", "description": "Date of the event (YYYY-MM-DD or formatted)." },
+        "startTime": { "type": "string", "description": "Start time string." },
+        "time": { "type": "string", "description": "Display duration or time range." },
+        "location": { "type": "string", "description": "Court venue or facility location.", "maxLength": 150 },
+        "courtsCount": { "type": "number", "description": "Number of available courts." },
+        "status": { "type": "string", "enum": ["active", "completed", "draft"], "description": "Event lifecycle status." },
+        "createdAt": { "type": "string", "description": "ISO timestamp of event creation." }
+      },
+      "required": ["id", "name", "courtsCount", "status"]
+    },
+    "Player": {
+      "title": "Player",
+      "description": "Master player profile in the club directory.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique player ID." },
+        "name": { "type": "string", "description": "Player full name.", "maxLength": 80 },
+        "photoUrl": { "type": "string", "description": "Optional avatar URL or data URI." },
+        "skillLevel": { "type": "number", "description": "Optional skill rating 1-6." },
+        "createdAt": { "type": "string", "description": "ISO timestamp of profile creation." }
+      },
+      "required": ["id", "name"]
+    },
+    "EventParticipant": {
+      "title": "EventParticipant",
+      "description": "Player participation state, live queue status, and statistics in an event.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Participant record ID." },
+        "eventId": { "type": "string", "description": "Associated event ID." },
+        "playerId": { "type": "string", "description": "Associated master player ID." },
+        "name": { "type": "string", "description": "Player name.", "maxLength": 80 },
+        "photoUrl": { "type": "string", "description": "Avatar URL." },
+        "skillLevel": { "type": "number", "description": "Skill rating 1-6." },
+        "status": { "type": "string", "enum": ["available", "playing", "waiting", "unavailable"], "description": "Current status in the session." },
+        "currentCourtId": { "type": "string", "description": "Court ID player is currently playing on." },
+        "gamesPlayed": { "type": "number", "description": "Total games played in this event." },
+        "gamesWon": { "type": "number", "description": "Total games won in this event." },
+        "gamesLost": { "type": "number", "description": "Total games lost in this event." },
+        "sittingRounds": { "type": "number", "description": "Consecutive rounds spent waiting." },
+        "consecutiveGames": { "type": "number", "description": "Consecutive games played without rest." }
+      },
+      "required": ["id", "eventId", "playerId", "name", "status"]
+    },
+    "Match": {
+      "title": "Match",
+      "description": "A 2v2 pickleball doubles match.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique match ID." },
+        "eventId": { "type": "string", "description": "Event ID." },
+        "matchNumber": { "type": "number", "description": "Sequential match number." },
+        "roundNumber": { "type": "number", "description": "Round number." },
+        "courtId": { "type": "string", "description": "Assigned court identifier." },
+        "courtName": { "type": "string", "description": "Display name of court." },
+        "score1": { "type": "number", "description": "Team 1 points scored." },
+        "score2": { "type": "number", "description": "Team 2 points scored." },
+        "status": { "type": "string", "enum": ["waiting", "live", "completed"], "description": "Match status." },
+        "startedAt": { "type": "string", "description": "Match start time string." },
+        "completedAt": { "type": "string", "description": "Match end time string." },
+        "durationMinutes": { "type": "number", "description": "Game duration in minutes." }
+      },
+      "required": ["id", "eventId", "courtId", "score1", "score2", "status"]
+    },
+    "PlayerSwitch": {
+      "title": "PlayerSwitch",
+      "description": "Audit record of two players swapped during a live match.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique switch record ID." },
+        "eventId": { "type": "string", "description": "Associated event ID." },
+        "matchId": { "type": "string", "description": "Associated match ID." },
+        "timestamp": { "type": "string", "description": "Time the switch occurred." },
+        "scoreAtSwitch1": { "type": "number", "description": "Team 1 score when switched." },
+        "scoreAtSwitch2": { "type": "number", "description": "Team 2 score when switched." }
+      },
+      "required": ["id", "eventId", "matchId", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/events/{eventId}": {
+      "schema": "Event",
+      "description": "Stores club pickleball events and court configurations."
+    },
+    "/players/{playerId}": {
+      "schema": "Player",
+      "description": "Master player profiles in the organization."
+    },
+    "/events/{eventId}/participants/{participantId}": {
+      "schema": "EventParticipant",
+      "description": "Live roster and participation state for players in an event."
+    },
+    "/events/{eventId}/matches/{matchId}": {
+      "schema": "Match",
+      "description": "Active and completed 2v2 doubles matches for an event."
+    },
+    "/events/{eventId}/switches/{switchId}": {
+      "schema": "PlayerSwitch",
+      "description": "Audit trail of mid-game player switches for an event."
+    }
+  }
+}

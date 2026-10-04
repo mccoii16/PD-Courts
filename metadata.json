@@ -1,0 +1,6 @@
+{
+  "name": "Pickleball Match Maker",
+  "description": "Simple pickleball open-play management and matchmaking application for clubs and casual organizers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
